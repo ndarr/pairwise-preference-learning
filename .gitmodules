@@ -1,0 +1,8 @@
+[submodule "gppl"]
+	path = code_gppl
+	url = url = git@github.com:UKPLab/tacl2018-preference-convincing.git
+	branch = master
+[submodule "bertranker"]
+	path = code_bertranker
+	url = https://github.com/UKPLab/tacl2020-interactive-ranking.git
+    branch = master
