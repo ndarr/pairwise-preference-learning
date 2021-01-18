@@ -10,7 +10,7 @@ This repository is based on [DLDH experiments](https://github.com/potamides/dldh
 
 Clone the repository:
 ```sh
-git clone --recurse-submodules git@github.com:DrCracket/dldh-experiments.git
+git clone --recurse-submodules git@github.com:ndarr/pairwise-preference-learning.git
 ```
 
 Install requirements:
@@ -51,21 +51,6 @@ python crowdgppl.py [--fresh] [--cat N]
 python bertranker.py [--fresh] [--cat N]
 ```
 
-## Experiments
-
-Train models and compute features:
-```sh
-python gppl.py && python crowdgppl.py
-```
-
-Run the experiments:
-```sh
-python main.py
-```
-
-Compute various statistics of the dataset:
-```sh
-python statistics.py
-```
-
-An overview of the results can be found [here](https://hackmd.io/TqQqj5r1QoS-MoTSbYpQ5g).
+## Results
+Results can be examined by taking a look at the various score files. These files are located in the directory *scores* and can be merged into one file using the code in *merge_method_scores.ipynb*. <br>
+Further the accuracy of the methods on how good they replicate the pairwise preferences of the annotators can be examined by using accuracy.ipynb.
