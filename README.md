@@ -3,7 +3,7 @@
 - Integrate conf matrices 
 - Make all modules trainable and with a pipeline which makes sense
 
-# GPPL Comparison
+# Pairwise Preference Learning 
 This repository is based on [DLDH experiments](https://github.com/potamides/dldh-experiments)
 
 ## Setup
