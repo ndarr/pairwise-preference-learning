@@ -9,7 +9,6 @@ from csv import reader
 import logging
 import numpy as np
 from code_gppl.python.models.gp_pref_learning import GPPrefLearning
-from metrics import get_alliteration_scores, get_readability_scores, get_rhyme_scores
 from utils import POEM_FOLDER, arrange_poem_scores
 
 # this is necessary because gppl code uses absolute imports

@@ -9,7 +9,6 @@ import csv
 import logging
 import numpy as np
 from code_gppl.python.models.collab_pref_learning_svi import CollabPrefLearningSVI
-from metrics import get_alliteration_scores, get_readability_scores, get_rhyme_scores
 from utils import POEM_FOLDER, arrange_poem_scores
 
 # this is necessary because gppl code uses absolute imports
