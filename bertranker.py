@@ -49,7 +49,7 @@ def save_scores(subset=True):
         csv_writer = csv.writer(f)
         csv_writer.writerow(header)
         for poem in scores_per_poem:
-            line = [poem.replace("\n", "<br>")] + scores_per_poem[poem]
+            line = [poem.replace("\n", "<br>").strip()] + scores_per_poem[poem]
             csv_writer.writerow(line)
 
 
@@ -61,7 +61,7 @@ def get_dataset(start_cat=5, end_cat=-1, subset=True):
     poem_pairs = []
     targets = []
     poems = []
-    with open(join(POEM_FOLDER,"consolidated_batches.csv"), "r") as f:
+    with open(join(POEM_FOLDER, "consolidated_batches.csv"), "r") as f:
         csv_reader = reader(f)
         # First line contains csv column names
         header = next(csv_reader)
