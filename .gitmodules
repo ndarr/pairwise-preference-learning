@@ -1,6 +1,6 @@
 [submodule "code_gppl"]
 	path = code_gppl
-	url = git@github.com:UKPLab/tacl2018-preference-convincing.git
+	url = https://github.com/UKPLab/tacl2018-preference-convincing.git
 [submodule "code_bertranker"]
 	path = code_bertranker
 	url = https://github.com/UKPLab/tacl2020-interactive-ranking.git 
