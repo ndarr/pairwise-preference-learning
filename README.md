@@ -5,7 +5,7 @@ This repository is based on [DLDH experiments](https://github.com/potamides/dldh
 
 Clone the repository:
 ```sh
-git clone --recurse-submodules git@github.com:ndarr/pairwise-preference-learning.git
+git clone --recurse-submodules https://github.com/ndarr/pairwise-preference-learning.git
 ```
 
 Install requirements:
