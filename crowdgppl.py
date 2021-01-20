@@ -128,7 +128,7 @@ def train_model(filename, start_cat=5, end_cat=-1):
     model.fit(person_train_idx, a1_train, a2_train, sent_features, prefs_train, optimize=False,
               use_median_ls=True, input_type='zero-centered')
 
-    logging.info("**** Completed training GPPL ****")
+    logging.info("**** Completed training CrowdGPPL ****")
 
     # Save the model in case we need to reload it
 
@@ -149,7 +149,7 @@ def get_accuracy(start_cat=5, end_cat=-1):
     person_train_idx, a1_train, a2_train, sent_features, prefs_train, ndims, sents = load_dataset(start_cat, end_cat)
 
     if not exists(MODEL_FILE + str(start_cat)):
-        print("GPPL: no trained model found")
+        print("CrowdGPPL: no trained model found")
         return 0
     with open(MODEL_FILE + str(start_cat), 'rb') as fh:
         model = pickle.load(fh)

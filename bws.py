@@ -73,7 +73,7 @@ def load_dataset(start_cat=5, end_cat=-1, subset=True):
                         total[left_poem] += 1
     return most_positive, most_negative, total, sents, pairs
 
-def compute_scores():
+def compute_scores(start_cat=5, end_cat=-1):
     return compute_scores_with_pairs()[0]
 
 def compute_scores_with_pairs(start_cat=5, end_cat=-1):
@@ -119,7 +119,5 @@ def print_all_accuracies():
 
 
 if __name__ == "__main__":
-    print(compute_scores())
     print_all_accuracies()
     save_scores()
-    load_dataset(5,6)

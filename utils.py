@@ -6,8 +6,9 @@ POEM_FOLDER = "data_poems/"
 
 def arrange_poem_scores(scores):
     """
-    Inverts a dictionary containing a mapping from scores to poems
-    :param    scores mapping from 
+    Merges a list of dictionaries containing poems and their respective score into one large dictionary
+    :param    list of dictionaries containing poems and scores
+    :returns  dictionary with all dictionaries put togeteher 
     """
     scores_per_poem = {}
     for score_list in scores:

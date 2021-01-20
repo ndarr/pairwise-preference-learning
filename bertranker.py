@@ -7,6 +7,7 @@ from code_bertranker.BERT_cQA import train_bertcqa, predict_bertcqa, BertRanker
 import torch
 import csv
 from utils import arrange_poem_scores, POEM_FOLDER
+from argparse import ArgumentParser
 
 
 def train_model(start_cat=5, end_cat=-1):
@@ -32,6 +33,7 @@ def get_scores_for_cat(start_cat=5, end_cat=-1):
 
 
 def save_scores(subset=True):
+    # Scores from all 
     scores = [get_accuracy()[1]]
     for i in range(5, 15):
         scores.append(get_accuracy(i, i + 1)[1])
@@ -129,9 +131,10 @@ def print_all_accuracies():
     print(f"BertGPPL acc all: {get_accuracy()[0]}")
     for i in range(5, 15):
         print(f"BertGPPL acc {i}: {get_accuracy(start_cat=i, end_cat=i + 1)[0]}")
-
-
+    
+        
 if __name__ == '__main__':
+    args = parse_arguments()
     # Train on all categories
     model, device = train_model()
     save_model(model, name="all")

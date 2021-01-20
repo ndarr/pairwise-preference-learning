@@ -1,8 +1,3 @@
-# TODO
-- Only one submodule for gppl and crowdGPPL
-- Integrate conf matrices 
-- Make all modules trainable and with a pipeline which makes sense
-
 # Pairwise Preference Learning 
 This repository is based on [DLDH experiments](https://github.com/potamides/dldh-experiments)
 
@@ -29,28 +24,28 @@ Real poems shall be put into *real_poems/real_poems.txt* seperated with one poem
 
 ## Training
 Models can be trained by executing their respective python scripts and allow a variety of parameters.
-By default all preferences from all categories are used but training can be also done by selecting a single category with *--cat N* starting with 0.
 Sequence embeddings are saved after the first run and loaded on each additional run. This can be omitted by providing *--fresh* as parameter. The newly created sequence embeddings are written over the old ones.
 ### BWS
 ```shell
-python bws.py [--fresh] [--cat N]
+python bws.py
 ```
 
 ### GPPL
 ```shell
-python gppl.py [--fresh] [--cat N]
+python gppl.py [--fresh] [--subset]
 ```
 
 ### crowdGPPL
 ```shell
-python crowdgppl.py [--fresh] [--cat N]
+python crowdgppl.py [--fresh] [--subset]
 ```
 
 ### BERTRanker
 ```shell
-python bertranker.py [--fresh] [--cat N]
+python bertranker.py [--fresh] [--subset]
 ```
 
 ## Results
 Results can be examined by taking a look at the various score files. These files are located in the directory *scores* and can be merged into one file using the code in *merge_method_scores.ipynb*. <br>
-Further the accuracy of the methods on how good they replicate the pairwise preferences of the annotators can be examined by using accuracy.ipynb.
+Further the accuracy of the methods on how good they replicate the pairwise preferences of the annotators can be examined by using *accuracy.ipynb*.<br>
+For experiments on only a subset of pairs a file containing the poems which have been annotated 10 times or more can be collected by executing *subset.ipynb*. The generated files are then considered in the code if the respective flags are set.
