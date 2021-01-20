@@ -8,20 +8,19 @@ from csv import reader
 import csv
 import logging
 import numpy as np
-from code_gppl.python.models.collab_pref_learning_svi import CollabPrefLearningSVI
-from utils import POEM_FOLDER, arrange_poem_scores
 
-# this is necessary because gppl code uses absolute imports
 __location__ = realpath(join(getcwd(), dirname(__file__)))
 path.append(join(__location__, "code_gppl", "python", "models"))
 
+from code_gppl.python.models.collab_pref_learning_svi import CollabPrefLearningSVI
+from utils import POEM_FOLDER, arrange_poem_scores
 
-EMBEDDINGS_FILE = join("embeddings", "embeddings.pkl")
+EMBEDDINGS_FILE = join("embeddings", "crowdgppl_embeddings.pkl")
 MODEL_FILE = join("models", "crowdgppl_model.pkl")
 
 
 def embed_sentences(sentences, fresh=False):
-    if exists(EMBEDDINGS_FILE) and not fresh:
+    if exists(EMBEDDINGS_FILE):
         with open(EMBEDDINGS_FILE, 'rb') as f:
             saved_sents, embeddings = pickle.load(f)
             if saved_sents == sentences:
@@ -29,12 +28,6 @@ def embed_sentences(sentences, fresh=False):
 
     model = SentenceTransformer('average_word_embeddings_glove.6B.300d', device="cuda")
     embeddings = np.asarray(model.encode(sentences))
-    rhyme_scores = get_rhyme_scores(sentences)
-    alliteration_scores = get_alliteration_scores(sentences)
-    readability_scores = get_readability_scores(sentences)
-    embeddings = np.concatenate((embeddings,
-         rhyme_scores, alliteration_scores, readability_scores), axis=1)
-
     with open(EMBEDDINGS_FILE, 'wb') as f:
         pickle.dump((sentences, embeddings), f)
 
@@ -45,15 +38,14 @@ def get_scores_for_cat(start_cat=5, end_cat=-1):
     _, poem_scores = get_accuracy(start_cat, end_cat)
     return poem_scores
 
+
 def save_scores():
     scores = []
     scores.append(get_accuracy()[1])
     for i in range(5, 15):
-        scores.append(get_accuracy(i, i+1)[1])
+        scores.append(get_accuracy(i, i + 1)[1])
 
     scores_per_poem = arrange_poem_scores(scores)
-
-    print(scores_per_poem)
 
     header = ['poem', 'all', 'coherent', 'grammatical', 'melodious', 'moved', 'real', 'rhyming',
               'readable', 'comprehensible', 'intense', 'liking']
@@ -63,6 +55,7 @@ def save_scores():
         for poem in scores_per_poem:
             line = [poem.replace("\n", "<br>")] + scores_per_poem[poem]
             csv_writer.writerow(line)
+
 
 def load_dataset(start_cat=5, end_cat=-1):
     person_train = []
@@ -112,7 +105,6 @@ def load_dataset(start_cat=5, end_cat=-1):
     a1_sent_idx = np.array(a1_sent_idx, dtype=int)
     a2_sent_idx = np.array(a2_sent_idx, dtype=int)
     prefs_train = np.array(prefs_train, dtype=float)
-    print(len(sents))
     return person_train_idx, a1_sent_idx, a2_sent_idx, sent_features, prefs_train, ndims, sents
 
 
@@ -121,7 +113,7 @@ def train_model(filename, start_cat=5, end_cat=-1):
     person_train_idx, a1_train, a2_train, sent_features, prefs_train, ndims, _ = load_dataset(start_cat, end_cat)
 
     model = CollabPrefLearningSVI(ndims, shape_s0=2, rate_s0=200, use_lb=True,
-            use_common_mean_t=True, ls=None)
+                                  use_common_mean_t=True, ls=None)
 
     model.max_iter = 2000
 
@@ -144,6 +136,7 @@ def compute_scores():
     with open(MODEL_FILE, 'rb') as fh:
         model = pickle.load(fh)
         return model.predict_t()
+
 
 def get_accuracy(start_cat=5, end_cat=-1):
     person_train_idx, a1_train, a2_train, sent_features, prefs_train, ndims, sents = load_dataset(start_cat, end_cat)
@@ -175,14 +168,14 @@ def get_accuracy(start_cat=5, end_cat=-1):
             poem_scores[poem1] = poem1_score
         if poem2 not in poem_scores:
             poem_scores[poem2] = poem2_score
-    return correct/(correct+wrong), poem_scores
+    return correct / (correct + wrong), poem_scores
+
 
 def print_all_accuracies():
     # Get accuracy accross all categories
     print(f"CrowdGPPL acc all: {get_accuracy()[0]}")
     for i in range(5, 15):
-        print(f"CrowdGPPL acc {i}: {get_accuracy(start_cat=i, end_cat=i+1)[0]}")
-
+        print(f"CrowdGPPL acc {i}: {get_accuracy(start_cat=i, end_cat=i + 1)[0]}")
 
 
 if __name__ == "__main__":
@@ -190,6 +183,6 @@ if __name__ == "__main__":
     train_model(filename=MODEL_FILE)
     # Train categories independently
     for i in range(5, 15):
-        train_model(MODEL_FILE+str(i), start_cat=i, end_cat=i+1)
+        train_model(MODEL_FILE + str(i), start_cat=i, end_cat=i + 1)
     print_all_accuracies()
     save_scores()

@@ -8,12 +8,13 @@ import csv
 from csv import reader
 import logging
 import numpy as np
+
+__location__ = realpath(join(getcwd(), dirname(__file__)))
+path.append(join(__location__, "code_gppl", "python", "models"))
+
 from code_gppl.python.models.gp_pref_learning import GPPrefLearning
 from utils import POEM_FOLDER, arrange_poem_scores
 
-# this is necessary because gppl code uses absolute imports
-__location__ = realpath(join(getcwd(), dirname(__file__)))
-path.append(join(__location__, "code_gppl", "python", "models"))
 
 EMBEDDINGS_FILE = join("embeddings", "gppl_embeddings.pkl")
 MODEL_FILE = "models/gppl_model_{}.pkl"
@@ -28,11 +29,6 @@ def embed_sentences(sentences):
 
     model = SentenceTransformer('average_word_embeddings_glove.6B.300d', device="cuda")
     embeddings = np.asarray(model.encode(sentences))
-    rhyme_scores = get_rhyme_scores(sentences)
-    alliteration_scores = get_alliteration_scores(sentences)
-    readability_scores = get_readability_scores(sentences)
-    embeddings = np.concatenate((embeddings,
-                                 rhyme_scores, alliteration_scores, readability_scores), axis=1)
 
     with open(EMBEDDINGS_FILE, 'wb') as f:
         pickle.dump((sentences, embeddings), f)

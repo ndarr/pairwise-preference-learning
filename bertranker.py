@@ -3,11 +3,12 @@ from os.path import join
 from bertranker_datasets import PairPrefDataset, SingleDataset
 from torch.utils.data import DataLoader
 from csv import reader
-from code_bertranker.BERT_cQA import train_bertcqa, predict_bertcqa, BertRanker
 import torch
 import csv
 from utils import arrange_poem_scores, POEM_FOLDER
 from argparse import ArgumentParser
+from code_bertranker.BERT_cQA import train_bertcqa, predict_bertcqa, BertRanker
+
 
 
 def train_model(start_cat=5, end_cat=-1):
