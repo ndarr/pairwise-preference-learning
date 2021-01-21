@@ -20,29 +20,29 @@ id, poem1, poem2, dataset1, dataset2, category1, category2, ..., categoryN
 ```
 The number of categories can be arbitrary as they are seen as multiple entries with preferences when trained on multiple categories.
 If it is desired to take only a subset of poems into account put the selection into *data_poems/multi_annotated_poems_10.txt*. Only pairs in the csv containing at least once one of the poems in this subset are considered for training.
-Real poems shall be put into *real_poems/real_poems.txt* seperated with one poem in each line (*\<br>* as line break inside poems).
 
 ## Training
-Models can be trained by executing their respective python scripts and allow a variety of parameters.
-Sequence embeddings are saved after the first run and loaded on each additional run. This can be omitted by providing *--fresh* as parameter. The newly created sequence embeddings are written over the old ones.
+Models can be trained by executing their respective python scripts.
+Using the parameter *--subset* allows the training only on pairs which contain poems selected with the *subset.ipynb* code.<br>
+*--no-training* skips the training process and does not update the score files. It just produces the accuracy output of the earlier trained model. This option is only available if training has been done earlier or the respective model files are in the model directory. 
 ### BWS
 ```shell
-python bws.py
+python bws.py [--subset]
 ```
 
 ### GPPL
 ```shell
-python gppl.py [--fresh] [--subset]
+python gppl.py [--subset] [--no-training]
 ```
 
 ### crowdGPPL
 ```shell
-python crowdgppl.py [--fresh] [--subset]
+python crowdgppl.py [--subset] [--no-training]
 ```
 
 ### BERTRanker
 ```shell
-python bertranker.py [--fresh] [--subset]
+python bertranker.py [--subset] [--no-training]
 ```
 
 ## Results
