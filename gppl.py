@@ -13,7 +13,7 @@ __location__ = realpath(join(getcwd(), dirname(__file__)))
 path.append(join(__location__, "code_gppl", "python", "models"))
 
 from code_gppl.python.models.gp_pref_learning import GPPrefLearning
-from utils import POEM_FOLDER, write_scores_to_file
+from utils import POEM_FOLDER, write_scores_to_file, format_model_filename
 
 
 EMBEDDINGS_FILE = join("embeddings", "gppl_embeddings.pkl")
@@ -21,12 +21,6 @@ MODEL_FILE = "models/gppl_model_{}.pkl"
 
 
 def embed_sentences(sentences):
-    if exists(EMBEDDINGS_FILE):
-        with open(EMBEDDINGS_FILE, 'rb') as f:
-            saved_sents, embeddings = pickle.load(f)
-            if saved_sents == sentences:
-                return embeddings
-
     model = SentenceTransformer('average_word_embeddings_glove.6B.300d', device="cuda")
     embeddings = np.asarray(model.encode(sentences))
 
@@ -42,29 +36,33 @@ def get_scores_for_cat(start_cat=5, end_cat=-1):
 
 
 def save_scores(filename):
-    scores = []
-    scores.append(get_accuracy()[1])
-    for i in range(5, 15):
-        scores.append(get_accuracy(i, i + 1)[1])
+    global subset
+    model_filename_ = format_model_filename(MODEL_FILE, "all", subset)
+    scores = [get_accuracy(model_filename_)[1]]
+    for idx in range(5, 15):
+        model_filename_ = format_model_filename(MODEL_FILE, str(idx), subset)
+        scores.append(get_accuracy(model_filename_, idx, idx + 1)[1])
     filepath = join("scores", filename)
     write_scores_to_file(scores, filepath)
 
 
 def load_dataset(start_cat=5, end_cat=-1):
+    global subset
     a1_sent_idx = []
     a2_sent_idx = []
     prefs_train = []
     sents = []
 
-    with open("data_poems/multi_annotated_poems_10.txt", "r") as f:
-        multi_annotated = [line.strip() for line in f.readlines()]
+    if subset:
+        with open(join(POEM_FOLDER, "multi_annotated_poems_10.txt"), "r") as f:
+            multi_annotated = [line.strip() for line in f.readlines()]
 
     for filename in glob(join(POEM_FOLDER, "*.csv")):
         with open(filename, newline='') as f:
             lines = reader(f, dialect="unix")
             categories = next(lines)[start_cat:end_cat]
             for line in lines:
-                if line[1] not in multi_annotated and line[2] not in multi_annotated:
+                if subset and line[1] not in multi_annotated and line[2] not in multi_annotated:
                     continue
                 line = [col.replace("<br>", "\n").strip() for col in line]
                 for text in line[1:3]:
@@ -93,7 +91,7 @@ def load_dataset(start_cat=5, end_cat=-1):
     return a1_sent_idx, a2_sent_idx, sent_features, prefs_train, ndims, sents
 
 
-def train_model(filename, optimize=False, start_cat=5, end_cat=-1):
+def train_model(start_cat=5, end_cat=-1, optimize=False):
     a1_train, a2_train, sent_features, prefs_train, ndims, _ = load_dataset(start_cat, end_cat)
 
     shape_s0 = len(a1_train) / 2.0
@@ -105,24 +103,19 @@ def train_model(filename, optimize=False, start_cat=5, end_cat=-1):
 
     model.fit(a1_train, a2_train, sent_features, prefs_train,
               optimize=optimize, use_median_ls=True, input_type='zero-centered')
-    with open(filename, 'wb') as fh:
-        pickle.dump(model, fh)
     return model
 
 
-def get_accuracy(start_cat=5, end_cat=-1):
+def get_accuracy(model_filename, start_cat=5, end_cat=-1):
     a1_train, a2_train, sent_features, prefs_train, ndims, sents = load_dataset(start_cat, end_cat)
-    if start_cat == 5 and end_cat == -1:
-        model_id = "all"
-    else:
-        model_id = str(start_cat)
 
-    if not exists(MODEL_FILE.format(model_id)):
+    if not exists(model_filename):
         print("GPPL: no trained model found")
         return 0
-    with open(MODEL_FILE.format(model_id), 'rb') as fh:
+    with open(model_filename, 'rb') as fh:
         model = pickle.load(fh)
         scores = model.predict_f()[0]
+
     correct = 0.
     wrong = 0.
     poem_scores = {}
@@ -147,19 +140,36 @@ def get_accuracy(start_cat=5, end_cat=-1):
     return correct / (correct + wrong), poem_scores
 
 
-def get_all_accuracies():
+def print_all_accuracies():
     # Get Main accuracy accross all categories
-    print(f"GPPL acc all: {get_accuracy()[0]}")
+    model_filename_ = format_model_filename(MODEL_FILE, "all", subset)
+    print(f"GPPL acc all: {get_accuracy(model_filename_)[0]}")
     for i in range(5, 15):
-        print(f"GPPL acc {i}: {get_accuracy(start_cat=i, end_cat=i + 1)[0]}")
+        model_filename_ = format_model_filename(MODEL_FILE, str(i), subset)
+        print(f"GPPL acc {i}: {get_accuracy(model_filename_, start_cat=i, end_cat=i + 1)[0]}")
+
+
+def save_model(model_, filename):
+    with open(filename, 'wb') as fh:
+        pickle.dump(model_, fh)
 
 
 if __name__ == "__main__":
-    # Train on all categories
-    train_model(MODEL_FILE.format("all"), optimize=True)
-    # Train categories independently
-    for i in range(5, 15):
-        get_all_accuracies()
-        train_model(MODEL_FILE.format(i), optimize=True, start_cat=i, end_cat=i + 1)
-    save_scores()
-    get_all_accuracies()
+    subset = True
+    training = True
+
+    subset_name = "_subset" if subset else ""
+
+    if training:
+        # Train on all categories
+        model = train_model()
+        model_filename = format_model_filename(MODEL_FILE, "all", subset)
+        save_model(model, model_filename)
+        # Train categories independently
+        for cat in range(5, 15):
+            model_filename = format_model_filename(MODEL_FILE, str(cat), subset)
+            model = train_model(start_cat=cat, end_cat=cat + 1)
+            save_model(model, model_filename)
+        score_filename = f"gppl_scores{subset_name}.csv"
+        save_scores(score_filename)
+    print_all_accuracies()
