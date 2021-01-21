@@ -13,7 +13,7 @@ __location__ = realpath(join(getcwd(), dirname(__file__)))
 path.append(join(__location__, "code_gppl", "python", "models"))
 
 from code_gppl.python.models.gp_pref_learning import GPPrefLearning
-from utils import POEM_FOLDER, arrange_poem_scores
+from utils import POEM_FOLDER, write_scores_to_file
 
 
 EMBEDDINGS_FILE = join("embeddings", "gppl_embeddings.pkl")
@@ -21,7 +21,7 @@ MODEL_FILE = "models/gppl_model_{}.pkl"
 
 
 def embed_sentences(sentences):
-    if exists(EMBEDDINGS_FILE) and False:
+    if exists(EMBEDDINGS_FILE):
         with open(EMBEDDINGS_FILE, 'rb') as f:
             saved_sents, embeddings = pickle.load(f)
             if saved_sents == sentences:
@@ -41,24 +41,13 @@ def get_scores_for_cat(start_cat=5, end_cat=-1):
     return poem_scores
 
 
-def save_scores():
+def save_scores(filename):
     scores = []
     scores.append(get_accuracy()[1])
     for i in range(5, 15):
         scores.append(get_accuracy(i, i + 1)[1])
-
-    scores_per_poem = arrange_poem_scores(scores)
-
-    print(scores_per_poem)
-
-    header = ['poem', 'all', 'coherent', 'grammatical', 'melodious', 'moved', 'real', 'rhyming',
-              'readable', 'comprehensible', 'intense', 'liking']
-    with open("scores/gppl_subset.csv", "w+") as f:
-        csv_writer = csv.writer(f)
-        csv_writer.writerow(header)
-        for poem in scores_per_poem:
-            line = [poem.replace("\n", "<br>")] + scores_per_poem[poem]
-            csv_writer.writerow(line)
+    filepath = join("scores", filename)
+    write_scores_to_file(scores, filepath)
 
 
 def load_dataset(start_cat=5, end_cat=-1):
@@ -97,11 +86,8 @@ def load_dataset(start_cat=5, end_cat=-1):
                     a2_sent_idx.append(sents.index(line[2]))
     sent_features = embed_sentences(sents)
     ndims = len(sent_features[0])
-    print(len(sents))
     a1_sent_idx = np.array(a1_sent_idx, dtype=int)
-    print(a1_sent_idx.shape)
     a2_sent_idx = np.array(a2_sent_idx, dtype=int)
-    print(a2_sent_idx.shape)
     prefs_train = np.array(prefs_train, dtype=float)
 
     return a1_sent_idx, a2_sent_idx, sent_features, prefs_train, ndims, sents
@@ -122,15 +108,6 @@ def train_model(filename, optimize=False, start_cat=5, end_cat=-1):
     with open(filename, 'wb') as fh:
         pickle.dump(model, fh)
     return model
-
-
-def compute_scores():
-    if not exists(MODEL_FILE):
-        print("GPPL: no trained model found")
-        return 0
-    with open(MODEL_FILE, 'rb') as fh:
-        model = pickle.load(fh)
-        return model.predict_f()[0]
 
 
 def get_accuracy(start_cat=5, end_cat=-1):

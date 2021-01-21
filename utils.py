@@ -1,4 +1,4 @@
-from csv import reader
+from csv import reader, writer
 from os.path import join
 
 POEM_FOLDER = "data_poems/"
@@ -17,6 +17,7 @@ def arrange_poem_scores(scores):
             curr_list.append(score_list[poem])
             scores_per_poem[poem] = curr_list
     return scores_per_poem
+
 
 def get_poem_pairs_with_labels(filename):
     """
@@ -62,4 +63,32 @@ def get_poem_pairs_with_labels(filename):
             pair['all'] = all_
             pairs.append(pair)
     return pairs, poems
-    
+
+
+def write_scores_to_file(scores, filepath):
+    scores_per_poem = arrange_poem_scores(scores)
+    header = ['poem', 'all', 'coherent', 'grammatical', 'melodious', 'moved', 'real', 'rhyming',
+              'readable', 'comprehensible', 'intense', 'liking']
+    with open(filepath, "w+") as f:
+        csv_writer = writer(f)
+        csv_writer.writerow(header)
+        for poem in scores_per_poem:
+            line = [poem.replace("\n", "<br>")] + scores_per_poem[poem]
+            csv_writer.writerow(line)
+
+
+def parse_arguments_for_methods():
+    pass
+
+
+def format_model_filename(basename, category, subset):
+    """
+    :param basename     String to format with one format place
+    :param category     category identifier as string
+    :param subset       Flag if subset
+    :return:            formatted filename of model
+    """
+    subset_name = "_subset" if subset else ""
+    # Train all categories together
+    model_filename = basename.format(category + subset_name)
+    return model_filename

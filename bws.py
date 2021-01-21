@@ -4,32 +4,23 @@ from os.path import join
 from collections import Counter, OrderedDict
 from csv import reader
 import csv
-from utils import arrange_poem_scores, POEM_FOLDER
+from utils import arrange_poem_scores, POEM_FOLDER, write_scores_to_file
+
 
 def get_scores_for_cat(start_cat=5, end_cat=-1):
     _, poem_scores = get_accuracy(start_cat, end_cat)
     return poem_scores
 
-def save_scores():
-    scores = []
-    scores.append(get_accuracy()[1])
+
+def save_scores(filepath):
+    scores = [get_accuracy()[1]]
     for i in range(5, 15):
-        scores.append(get_accuracy(i, i+1)[1])
+        scores.append(get_accuracy(i, i + 1)[1])
+    write_scores_to_file(scores, filepath)
 
-    scores_per_poem = arrange_poem_scores(scores)
 
-    print(scores_per_poem)
-
-    header = ['poem', 'all', 'coherent', 'grammatical', 'melodious', 'moved', 'real', 'rhyming',
-              'readable', 'comprehensible', 'intense', 'liking']
-    with open("scores/bws_subset.csv", "w+") as f:
-        csv_writer = csv.writer(f)
-        csv_writer.writerow(header)
-        for poem in scores_per_poem:
-            line = [poem.replace("\n", "<br>")] + scores_per_poem[poem]
-            csv_writer.writerow(line)
-
-def load_dataset(start_cat=5, end_cat=-1, subset=True):
+def load_dataset(start_cat=5, end_cat=-1):
+    global subset
     if subset:
         with open(join(POEM_FOLDER, "multi_annotated_poems_10.txt"), "r") as f:
             multi_annotated = [line.strip() for line in f.readlines()]
@@ -73,8 +64,6 @@ def load_dataset(start_cat=5, end_cat=-1, subset=True):
                         total[left_poem] += 1
     return most_positive, most_negative, total, sents, pairs
 
-def compute_scores(start_cat=5, end_cat=-1):
-    return compute_scores_with_pairs()[0]
 
 def compute_scores_with_pairs(start_cat=5, end_cat=-1):
     most_positive, most_negative, total, _, pairs = load_dataset(start_cat, end_cat)
@@ -85,6 +74,7 @@ def compute_scores_with_pairs(start_cat=5, end_cat=-1):
                       max((total[poem], 1)))
         sents.append(poem)
     return scores, sents, pairs
+
 
 def get_accuracy(start_cat=5, end_cat=-1):
     scores, sents, pairs = compute_scores_with_pairs(start_cat, end_cat)
@@ -110,14 +100,17 @@ def get_accuracy(start_cat=5, end_cat=-1):
             poem_scores[poem1] = poem1_score
         if poem2 not in poem_scores:
             poem_scores[poem2] = poem2_score
-    return correct/(correct+wrong), poem_scores
+    return correct / (correct + wrong), poem_scores
+
 
 def print_all_accuracies():
     print(f"BWS acc all: {get_accuracy()[0]}")
     for i in range(5, 15):
-        print(f"BWS acc {i}: {get_accuracy(i, i+1)[0]}")
+        print(f"BWS acc {i}: {get_accuracy(i, i + 1)[0]}")
 
 
 if __name__ == "__main__":
+    subset = True
+    subset_name = "_subset" if subset else ""
     print_all_accuracies()
-    save_scores()
+    save_scores(f"scores/bws_scores{subset_name}.csv")
