@@ -46,6 +46,6 @@ python bertranker.py [--subset] [--no-training]
 ```
 
 ## Results
-Results can be examined by taking a look at the various score files. These files are located in the directory *scores* and can be merged into one file using the code in *merge_method_scores.ipynb*. <br>
+Results can be examined by taking a look at the various score files. These files are located in the directory *scores* and can be merged into one file using the code in *merge_method_scores.ipynb*. The file *scores/normalized_scores.csv* only contains the poems from the subset as they led to better results in downstream applications<br>
 Further the accuracy of the methods on how good they replicate the pairwise preferences of the annotators can be examined by using *accuracy.ipynb*.<br>
 For experiments on only a subset of pairs a file containing the poems which have been annotated 10 times or more can be collected by executing *subset.ipynb*. The generated files are then considered in the code if the respective flags are set.
