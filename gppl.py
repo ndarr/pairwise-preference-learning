@@ -15,7 +15,6 @@ path.append(join(__location__, "code_gppl", "python", "models"))
 from code_gppl.python.models.gp_pref_learning import GPPrefLearning
 from utils import POEM_FOLDER, write_scores_to_file, format_model_filename
 
-
 EMBEDDINGS_FILE = join("embeddings", "gppl_embeddings.pkl")
 MODEL_FILE = "models/gppl_model_{}.pkl"
 
@@ -96,25 +95,25 @@ def train_model(start_cat=5, end_cat=-1, optimize=False):
 
     shape_s0 = len(a1_train) / 2.0
     rate_s0 = shape_s0 * np.var(prefs_train)
-    model = GPPrefLearning(
+    model_ = GPPrefLearning(
         ndims, shape_s0=shape_s0, rate_s0=rate_s0)
 
-    model.max_iter = 2000
+    model_.max_iter = 2000
 
-    model.fit(a1_train, a2_train, sent_features, prefs_train,
-              optimize=optimize, use_median_ls=True, input_type='zero-centered')
-    return model
+    model_.fit(a1_train, a2_train, sent_features, prefs_train,
+               optimize=optimize, use_median_ls=True, input_type='zero-centered')
+    return model_
 
 
-def get_accuracy(model_filename, start_cat=5, end_cat=-1):
+def get_accuracy(model_filename_, start_cat=5, end_cat=-1):
     a1_train, a2_train, sent_features, prefs_train, ndims, sents = load_dataset(start_cat, end_cat)
 
-    if not exists(model_filename):
+    if not exists(model_filename_):
         print("GPPL: no trained model found")
         return 0
     with open(model_filename, 'rb') as fh:
-        model = pickle.load(fh)
-        scores = model.predict_f()[0]
+        model_ = pickle.load(fh)
+        scores = model_.predict_f()[0]
 
     correct = 0.
     wrong = 0.
@@ -141,6 +140,7 @@ def get_accuracy(model_filename, start_cat=5, end_cat=-1):
 
 
 def print_all_accuracies():
+    global subset
     # Get Main accuracy accross all categories
     model_filename_ = format_model_filename(MODEL_FILE, "all", subset)
     print(f"GPPL acc all: {get_accuracy(model_filename_)[0]}")

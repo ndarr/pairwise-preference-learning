@@ -1,5 +1,6 @@
 from csv import reader, writer
 from os.path import join
+from argparse import ArgumentParser
 
 POEM_FOLDER = "data_poems/"
 
@@ -78,7 +79,15 @@ def write_scores_to_file(scores, filepath):
 
 
 def parse_arguments_for_methods():
-    pass
+    """
+    Parses System Arguments and returns them as a dictionary
+    :return: dict with boolean entries for no-training and subset
+    """
+    argparser = ArgumentParser()
+    argparser.add_argument("--no-training", dest="training", default=False, action="store_true")
+    argparser.add_argument("--subset", dest="subset", default=False, action="store_true")
+    args = argparser.parse_args()
+    return args
 
 
 def format_model_filename(basename, category, subset):

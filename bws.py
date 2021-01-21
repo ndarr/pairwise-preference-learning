@@ -1,10 +1,8 @@
 from glob import glob
-from os import getcwd
 from os.path import join
-from collections import Counter, OrderedDict
+from collections import OrderedDict
 from csv import reader
-import csv
-from utils import arrange_poem_scores, POEM_FOLDER, write_scores_to_file
+from utils import POEM_FOLDER, write_scores_to_file, parse_arguments_for_methods
 
 
 def get_scores_for_cat(start_cat=5, end_cat=-1):
@@ -110,7 +108,8 @@ def print_all_accuracies():
 
 
 if __name__ == "__main__":
-    subset = True
+    args = parse_arguments_for_methods()
+    subset = args.subset
     subset_name = "_subset" if subset else ""
     print_all_accuracies()
     save_scores(f"scores/bws_scores{subset_name}.csv")

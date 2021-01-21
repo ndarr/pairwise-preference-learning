@@ -5,7 +5,7 @@ from torch.utils.data import DataLoader
 from csv import reader
 import torch
 import csv
-from utils import POEM_FOLDER, write_scores_to_file, format_model_filename
+from utils import POEM_FOLDER, write_scores_to_file, format_model_filename, parse_arguments_for_methods
 from code_bertranker.BERT_cQA import train_bertcqa, predict_bertcqa, BertRanker
 
 MODEL_FILE = "models/bertranker_{}.pt"
@@ -125,8 +125,9 @@ def print_all_accuracies():
 
 
 if __name__ == '__main__':
-    subset = True
-    training = True
+    args = parse_arguments_for_methods()
+    subset = args.subset
+    training = not args.no_traing
 
     subset_name = "_subset" if subset else ""
 
