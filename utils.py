@@ -84,7 +84,7 @@ def parse_arguments_for_methods():
     :return: dict with boolean entries for no-training and subset
     """
     argparser = ArgumentParser()
-    argparser.add_argument("--no-training", dest="training", default=False, action="store_true")
+    argparser.add_argument("--no-training", dest="no_training", default=False, action="store_true")
     argparser.add_argument("--subset", dest="subset", default=False, action="store_true")
     args = argparser.parse_args()
     return args

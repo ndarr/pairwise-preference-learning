@@ -126,7 +126,7 @@ def print_all_accuracies():
 if __name__ == '__main__':
     args = parse_arguments_for_methods()
     subset = args.subset
-    training = not args.no_traing
+    training = not args.no_training
 
     subset_name = "_subset" if subset else ""
 
