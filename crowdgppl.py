@@ -5,7 +5,6 @@ from os import getcwd
 from os.path import join, realpath, dirname, exists
 from sentence_transformers import SentenceTransformer
 from csv import reader
-import csv
 import logging
 import numpy as np
 
@@ -13,7 +12,7 @@ __location__ = realpath(join(getcwd(), dirname(__file__)))
 path.append(join(__location__, "code_gppl", "python", "models"))
 
 from code_gppl.python.models.collab_pref_learning_svi import CollabPrefLearningSVI
-from utils import POEM_FOLDER, write_scores_to_file, format_model_filename
+from utils import POEM_FOLDER, write_scores_to_file, format_model_filename, parse_arguments_for_methods
 
 EMBEDDINGS_FILE = join("embeddings", "crowdgppl_embeddings.pkl")
 MODEL_FILE = "models/crowdgppl_model_{}.pkl"
@@ -164,8 +163,9 @@ def print_all_accuracies():
 
 
 if __name__ == "__main__":
-    subset = True
-    training = True
+    args = parse_arguments_for_methods()
+    subset = args.subset
+    training = not args.no_traing
 
     subset_name = "_subset" if subset else ""
 

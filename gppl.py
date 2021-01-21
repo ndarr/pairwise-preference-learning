@@ -13,7 +13,7 @@ __location__ = realpath(join(getcwd(), dirname(__file__)))
 path.append(join(__location__, "code_gppl", "python", "models"))
 
 from code_gppl.python.models.gp_pref_learning import GPPrefLearning
-from utils import POEM_FOLDER, write_scores_to_file, format_model_filename
+from utils import POEM_FOLDER, write_scores_to_file, format_model_filename, parse_arguments_for_methods
 
 EMBEDDINGS_FILE = join("embeddings", "gppl_embeddings.pkl")
 MODEL_FILE = "models/gppl_model_{}.pkl"
@@ -155,8 +155,9 @@ def save_model(model_, filename):
 
 
 if __name__ == "__main__":
-    subset = True
-    training = True
+    args = parse_arguments_for_methods()
+    subset = args.subset
+    training = not args.no_training
 
     subset_name = "_subset" if subset else ""
 
