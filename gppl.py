@@ -22,10 +22,6 @@ MODEL_FILE = "models/gppl_model_{}.pkl"
 def embed_sentences(sentences):
     model = SentenceTransformer('average_word_embeddings_glove.6B.300d', device="cuda")
     embeddings = np.asarray(model.encode(sentences))
-
-    with open(EMBEDDINGS_FILE, 'wb') as f:
-        pickle.dump((sentences, embeddings), f)
-
     return embeddings
 
 
