@@ -107,7 +107,7 @@ def get_accuracy(model_filename_, start_cat=5, end_cat=-1):
     if not exists(model_filename_):
         print("GPPL: no trained model found")
         return 0
-    with open(model_filename, 'rb') as fh:
+    with open(model_filename_, 'rb') as fh:
         model_ = pickle.load(fh)
         scores = model_.predict_f()[0]
 
@@ -167,6 +167,6 @@ if __name__ == "__main__":
             model_filename = format_model_filename(MODEL_FILE, str(cat), subset)
             model = train_model(start_cat=cat, end_cat=cat + 1)
             save_model(model, model_filename)
-        score_filename = f"gppl_scores{subset_name}.csv"
+        score_filename = f"gppl_{subset_name}.csv"
         save_scores(score_filename)
     print_all_accuracies()

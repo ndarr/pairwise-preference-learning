@@ -101,12 +101,12 @@ def train_model(start_cat=5, end_cat=-1):
     person_train_idx, a1_train, a2_train, sent_features, prefs_train, ndims, _ = load_dataset(start_cat, end_cat)
 
     model_ = CollabPrefLearningSVI(ndims, shape_s0=2, rate_s0=200, use_lb=True,
-                                  use_common_mean_t=True, ls=None)
+                                   use_common_mean_t=True, ls=None)
 
     model_.max_iter = 2000
 
     model_.fit(person_train_idx, a1_train, a2_train, sent_features, prefs_train, optimize=False,
-              use_median_ls=True, input_type='zero-centered')
+               use_median_ls=True, input_type='zero-centered')
 
     logging.info("**** Completed training CrowdGPPL ****")
     return model_
@@ -120,8 +120,8 @@ def get_accuracy(model_path, start_cat=5, end_cat=-1):
         return 0
     # Get Scores
     with open(model_path, 'rb') as fh:
-        model = pickle.load(fh)
-        scores = model.predict_f()
+        model_ = pickle.load(fh)
+        scores = model_.predict_f()
     correct = 0.
     wrong = 0.
     poem_scores = {}
@@ -149,12 +149,12 @@ def get_accuracy(model_path, start_cat=5, end_cat=-1):
 def print_all_accuracies():
     global subset
     # Get accuracy accross all categories
-    model_filename = format_model_filename(MODEL_FILE, "all", subset)
-    all_acc, _ = get_accuracy(model_filename)
+    model_filename_ = format_model_filename(MODEL_FILE, "all", subset)
+    all_acc, _ = get_accuracy(model_filename_)
     print(f"CrowdGPPL acc all: {all_acc}")
     for cat_idx in range(5, 15):
-        model_filename = format_model_filename(MODEL_FILE, str(cat_idx), subset)
-        cat_acc, _ = get_accuracy(model_filename, start_cat=cat_idx, end_cat=cat_idx + 1)
+        model_filename_ = format_model_filename(MODEL_FILE, str(cat_idx), subset)
+        cat_acc, _ = get_accuracy(model_filename_, start_cat=cat_idx, end_cat=cat_idx + 1)
         print(f"CrowdGPPL acc {i}: {cat_acc}")
 
 
@@ -178,5 +178,5 @@ if __name__ == "__main__":
             model_filename = format_model_filename(MODEL_FILE, str(i), subset)
             model = train_model(start_cat=i, end_cat=i + 1)
             save_model(model, model_filename)
-        save_scores(f"crowdgppl_scores{subset_name}.csv")
+        save_scores(f"crowdgppl_{subset_name}.csv")
     print_all_accuracies()

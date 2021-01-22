@@ -142,5 +142,5 @@ if __name__ == '__main__':
             save_model(model, model_filename)
             # Remove model to allow multiple trainings after each other
             del model
-        save_scores(f"bertranker_scores{subset_name}.csv")
+        save_scores(f"bertranker_{subset_name}.csv")
     print_all_accuracies()
