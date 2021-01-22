@@ -112,4 +112,4 @@ if __name__ == "__main__":
     subset = args.subset
     subset_name = "_subset" if subset else ""
     print_all_accuracies()
-    save_scores(f"scores/bws_{subset_name}.csv")
+    save_scores(f"scores/bws{subset_name}.csv")

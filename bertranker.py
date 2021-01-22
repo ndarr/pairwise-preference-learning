@@ -20,10 +20,10 @@ def save_model(model, filepath):
 
 
 def load_model(path):
-    model = BertRanker()
-    model.load_state_dict(torch.load(path))
+    model_ = BertRanker()
+    model_.load_state_dict(torch.load(path))
     model.to("cuda")
-    return model
+    return model_
 
 
 def get_scores_for_cat(start_cat=5, end_cat=-1):
@@ -33,12 +33,12 @@ def get_scores_for_cat(start_cat=5, end_cat=-1):
 
 def save_scores(filename):
     global subset
-    model_filename = format_model_filename(MODEL_FILE, "all", subset)
+    model_filename_ = format_model_filename(MODEL_FILE, "all", subset)
     # Scores from all 
-    scores = [get_accuracy(model_filename)[1]]
+    scores = [get_accuracy(model_filename_)[1]]
     for i in range(5, 15):
-        model_filename = format_model_filename(MODEL_FILE, str(i), subset)
-        scores.append(get_accuracy(model_filename, i, i + 1)[1])
+        model_filename_ = format_model_filename(MODEL_FILE, str(i), subset)
+        scores.append(get_accuracy(model_filename_, i, i + 1)[1])
 
     filepath = join("scores", filename)
     write_scores_to_file(scores, filepath)
@@ -81,11 +81,11 @@ def get_dataset(start_cat=5, end_cat=-1):
     return PairPrefDataset(poem_pairs, targets), poems, poem_pairs, targets
 
 
-def get_accuracy(model_filename, start_cat=5, end_cat=-1):
+def get_accuracy(model_filename_, start_cat=5, end_cat=-1):
     _, poems, poem_pairs, targets = get_dataset(start_cat, end_cat)
     single_ds = SingleDataset(poems)
     dataloader = DataLoader(single_ds, batch_size=24)
-    scores, embs = predict_bertcqa(load_model(model_filename), dataloader, "cuda")
+    scores, embs = predict_bertcqa(load_model(model_filename_), dataloader, "cuda")
     correct = 0.
     wrong = 0.
     poem_scores = {}
@@ -116,11 +116,11 @@ def get_accuracy(model_filename, start_cat=5, end_cat=-1):
 def print_all_accuracies():
     global subset
     # Get Main accuracy accross all categories
-    model_filename = format_model_filename(MODEL_FILE, "all", subset)
-    print(f"BertGPPL acc all: {get_accuracy(model_filename)[0]}")
+    model_filename_ = format_model_filename(MODEL_FILE, "all", subset)
+    print(f"BertGPPL acc all: {get_accuracy(model_filename_)[0]}")
     for i in range(5, 15):
-        model_filename = format_model_filename(MODEL_FILE, str(i), subset)
-        print(f"BertGPPL acc {i}: {get_accuracy(model_filename, start_cat=i, end_cat=i + 1)[0]}")
+        model_filename_ = format_model_filename(MODEL_FILE, str(i), subset)
+        print(f"BertGPPL acc {i}: {get_accuracy(model_filename_, start_cat=i, end_cat=i + 1)[0]}")
 
 
 if __name__ == '__main__':
@@ -142,5 +142,5 @@ if __name__ == '__main__':
             save_model(model, model_filename)
             # Remove model to allow multiple trainings after each other
             del model
-        save_scores(f"bertranker_{subset_name}.csv")
+        save_scores(f"bertranker{subset_name}.csv")
     print_all_accuracies()

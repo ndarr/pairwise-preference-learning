@@ -1,9 +1,10 @@
 from transformers import BertTokenizer
-from torch.utils.data import Dataset, DataLoader
+from torch.utils.data import Dataset
+import torch
 
 class PairPrefDataset(Dataset):
     def __init__(self, poem_pairs: list, targets: list):
-        self.tokenizer = BertTokenizer.from_pretrained('bert-base-uncased')
+        self.tokenizer = BertTokenizer.from_pretrained('bert-base-cased')
         self.poem_pairs = poem_pairs
         self.targets = targets
         self.max_len = 80

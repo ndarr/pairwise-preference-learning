@@ -155,16 +155,13 @@ def print_all_accuracies():
     for cat_idx in range(5, 15):
         model_filename_ = format_model_filename(MODEL_FILE, str(cat_idx), subset)
         cat_acc, _ = get_accuracy(model_filename_, start_cat=cat_idx, end_cat=cat_idx + 1)
-        print(f"CrowdGPPL acc {i}: {cat_acc}")
+        print(f"CrowdGPPL acc {cat_idx}: {cat_acc}")
 
 
 if __name__ == "__main__":
     args = parse_arguments_for_methods()
     subset = args.subset
     training = not args.no_training
-
-    print(subset)
-    print(training)
 
     subset_name = "_subset" if subset else ""
 
@@ -178,5 +175,5 @@ if __name__ == "__main__":
             model_filename = format_model_filename(MODEL_FILE, str(i), subset)
             model = train_model(start_cat=i, end_cat=i + 1)
             save_model(model, model_filename)
-        save_scores(f"crowdgppl_{subset_name}.csv")
+        save_scores(f"crowdgppl{subset_name}.csv")
     print_all_accuracies()

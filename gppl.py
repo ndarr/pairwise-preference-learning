@@ -167,6 +167,6 @@ if __name__ == "__main__":
             model_filename = format_model_filename(MODEL_FILE, str(cat), subset)
             model = train_model(start_cat=cat, end_cat=cat + 1)
             save_model(model, model_filename)
-        score_filename = f"gppl_{subset_name}.csv"
+        score_filename = f"gppl{subset_name}.csv"
         save_scores(score_filename)
     print_all_accuracies()
