@@ -15,7 +15,6 @@ isort
 jmespath
 joblib
 kiwisolver
-lazy-object-proxy
 matplotlib
 mccabe
 nltk
