@@ -14,16 +14,12 @@ path.append(join(__location__, "code_gppl", "python", "models"))
 from code_gppl.python.models.collab_pref_learning_svi import CollabPrefLearningSVI
 from utils import POEM_FOLDER, write_scores_to_file, format_model_filename, parse_arguments_for_methods
 
-EMBEDDINGS_FILE = join("embeddings", "crowdgppl_embeddings.pkl")
 MODEL_FILE = "models/crowdgppl_model_{}.pkl"
 
 
 def embed_sentences(sentences):
     sentence_encoder = SentenceTransformer('average_word_embeddings_glove.6B.300d', device="cuda")
     embeddings = np.asarray(sentence_encoder.encode(sentences))
-    with open(EMBEDDINGS_FILE, 'wb') as f:
-        pickle.dump((sentences, embeddings), f)
-
     return embeddings
 
 
