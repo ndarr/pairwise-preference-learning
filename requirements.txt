@@ -8,7 +8,6 @@ cycler
 Distance
 docutils
 g2p-en
-idna
 importlib-metadata
 inflect
 isort
